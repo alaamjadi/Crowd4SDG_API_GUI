@@ -1,5 +1,22 @@
 var file
-var configSet = {method: "", csv_url: "", col_name: "", filters:[], confidence_thresholds:[] }
+var configSet = {
+    method: "",
+    csv_url: "",
+    col_name: "",
+    filters:[],
+    confidence_thresholds:[]
+}
+const URL = {
+    // host: window.location.href,
+    host: 'http://131.175.120.2:7777/',
+    api_get: 'Filter/API/filterImageURL',
+    api_psot: 'Filter/API/filterImage'
+}
+const threshold = {
+    PeopleDetector: 0.98,
+    MemeDetector: 0.89,
+    PublicPrivateClassifier: 0.93
+}
 
 /* Copyright 2012-2013 Daniel Tillin -- csvToArray v2.1 (Unminifiled for development) -- http://code.google.com/p/csv-to-array/ */
 String.prototype.csvToArray = function (o) {
@@ -102,6 +119,10 @@ function createDropDown(inputList) {
 
 /********** main selection **********/
 $('select').change(function() {
+    // get the default values
+    getDefault_URL_columnName()
+    
+    
     var selectedValue = $(this).val()
     if (selectedValue == 'methodGET') {
         configSet.method = 'GET'
@@ -149,17 +170,26 @@ $('.columns').change(function() {
     configSet.col_name = value
 });
 
+/********** get defualt values of URL and column Name **********/
+function getDefault_URL_columnName(params) {
+    configSet.col_name = $('#columns').val()
+    configSet.csv_url = $('#urls').val()
+}
+
 /**********  filters **********/
 $('#filter1').change(function() {
     var value = $(this).val()
+    $('#threshold1').val(threshold[value]).change()
     configSet.filters[0] = value
 })
 $('#filter2').change(function() {
     var value = $(this).val()
+    $('#threshold2').val(threshold[value]).change()
     configSet.filters[1] = value
 })
 $('#filter3').change(function() {
     var value = $(this).val()
+    $('#threshold3').val(threshold[value]).change()
     configSet.filters[2] = value
 })
 
@@ -177,6 +207,7 @@ $('#threshold3').change(function() {
     configSet.confidence_thresholds[2] = value
 })
 
+// Helper function to create the sophisticated url for API
 function urlMaker(){
     url_string = ""
     
@@ -193,19 +224,46 @@ function urlMaker(){
         url_string = url_string.concat('confidence_threshold_list=',element,'&')
     });
 
-    // remove the extra & sign in the loop
-    url_string = url_string.slice(0, -1)
+    // concatinating the column name
+    url_string = url_string.concat('column_name=',configSet.col_name,'&')
 
-    // url_string = url_string.concat('column_name=',configSet.col_name,'&')
-    // url_string = url_string.concat('csv_url=',configSet.csv_url)
+    // concatinating the CSV URL/Path
+    url_string = url_string.concat('csv_url=',configSet.csv_url)
+
+    // remove the extra & sign in the loop
+    // url_string = url_string.slice(0, -1)
     return url_string
 }
 
 /**********  submit button **********/
 $("button").click(function(){
+    console.log(configSet)
     if (configSet.method == 'GET') {
-        $.get("https://131.175.120.2:7777/Filter/API/filterImageURL"+urlMaker(), {column_name : configSet.col_name, csv_url : configSet.csv_url}, function(data, status){ alert("Data: " + data + "\nStatus: " + status) })
+        console.log(URL.host + URL.api_get + urlMaker())
+        fetch(URL.host + URL.api_get + urlMaker())
+        .then(function (response) {
+            if (response.status !== 200) {
+                console.log("Fetch response failed. Status Code: " + response.status);
+                return Promise.reject(response);
+            } else {
+                return response.text();
+            }
+        }).then(function(data) {
+            console.log(data)
+        }).catch(function(error) {
+            console.log("Fetch JS failed: ", error);
+        })
     } else if (configSet.method == 'POST'){
-        // $.post("https://131.175.120.2:7777/Filter/API/filterImage", {name: "a", set: "b"}, function(data, status){ alert("Data: " + data + "\nStatus: " + status) })
+        console.log(URL.host + URL.api_get + urlMaker())
     }
   });
+
+
+//   $("button").click(function(){
+//     console.log(configSet)
+//     if (configSet.method == 'GET') {
+//         $.get("https://131.175.120.2:7777/Filter/API/filterImageURL"+urlMaker(), {column_name : configSet.col_name, csv_url : configSet.csv_url}, function(data, status){ alert("Data: " + data + "\nStatus: " + status) })
+//     } else if (configSet.method == 'POST'){
+//         $.post(configSet.csv_url, function(data, status){ alert("Data: " + data + "\nStatus: " + status) })
+//     }
+//   });

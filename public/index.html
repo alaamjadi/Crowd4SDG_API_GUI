@@ -62,7 +62,7 @@
         <div class="col-10 col-sm-6 col-md-5 col-lg-4 col-xl-5">
           <p>Enter the URL:</p>
           <div class="input-group">
-            <input type="text" class="form-control urls" placeholder="https://drive.google.com/" aria-label="CSV URL" >
+            <input type="text" class="form-control urls" id="urls" value="https://drive.google.com/" placeholder="https://drive.google.com/" aria-label="CSV URL" onfocus="this.value='';">
           </div>
         </div>
       </div>
@@ -84,7 +84,7 @@
         <div class="col-10 col-sm-6 col-md-5 col-lg-4 col-xl-3">
           <p>Enter the column name:</p>
           <div class="input-group">
-            <input type="text" class="form-control columns" placeholder="media_url" aria-label="column name media url" >
+            <input type="text" class="form-control columns" id="columns" value="media_url" placeholder="media_url" aria-label="column name media url" onfocus="this.value='';">
           </div>
         </div>
       </div>
@@ -103,10 +103,10 @@
                 <option disabled selected value="none">Choose a filter</option>
                 <option value="PeopleDetector">People Detector</option>
                 <option value="MemeDetector">Meme Detector</option>
-                <option value="PublicPrivateClassifier"> Public-Private Classifier</option>
+                <option value="PublicPrivateClassifier">Public-Private Classifier</option>
               </select>
             </div>
-            <input type="text" class="form-control" id="threshold1" aria-label="Text input with dropdown button">
+            <input type="text" class="form-control" id="threshold1" aria-label="Text input with dropdown button" onfocus="this.value='';">
           </div>
 
           <br/>
@@ -118,10 +118,10 @@
                 <option disabled selected value="none">Choose a filter</option>
                 <option value="PeopleDetector">People Detector</option>
                 <option value="MemeDetector">Meme Detector</option>
-                <option value="PublicPrivateClassifier"> Public-Private Classifier</option>
+                <option value="PublicPrivateClassifier">Public-Private Classifier</option>
               </select>
             </div>
-            <input type="text" class="form-control" id="threshold2" aria-label="Text input with dropdown button">
+            <input type="text" class="form-control" id="threshold2" aria-label="Text input with dropdown button" onfocus="this.value='';">
           </div>
 
           <br/>
@@ -133,10 +133,10 @@
                 <option disabled selected value="none">Choose a filter</option>
                 <option value="PeopleDetector">People Detector</option>
                 <option value="MemeDetector">Meme Detector</option>
-                <option value="PublicPrivateClassifier"> Public-Private Classifier</option>
+                <option value="PublicPrivateClassifier">Public-Private Classifier</option>
               </select>
             </div>
-            <input type="text" class="form-control" id="threshold3" aria-label="Text input with dropdown button">
+            <input type="text" class="form-control" id="threshold3" aria-label="Text input with dropdown button" onfocus="this.value='';">
           </div>
 
         </div>
