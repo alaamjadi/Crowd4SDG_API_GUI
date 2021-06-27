@@ -191,7 +191,7 @@
 
         <div class="row d-none" id="submitSection">
             <div class="col-10 col-sm-6 col-md-5 col-lg-4 col-xl-3">
-                <button type="button" class="btn btn-primary">Sumbit</button>
+                <button type="button" class="btn btn-primary">Submit</button>
             </div>
         </div>
 
@@ -299,7 +299,7 @@
         /********** load CSV locally **********/
         $('#load-csv').change(function () {
             let i = $(this).prev('label').clone()
-            file = $('#load-csv')[0].files[0]
+            const file = $('#load-csv')[0].files[0]
             $(this).prev('label').text(file.name)
             if (file) {
                 let reader = new FileReader()
@@ -459,26 +459,64 @@
             return 'D' + this.getFullYear() + (((this.getMonth() + 1) < 10) ? "0" : "") + (this.getMonth() + 1) + ((this.getDate() < 10) ? "0" : "") + this.getDate() + 'T' + ((this.getHours() < 10) ? "0" : "") + this.getHours() + ((this.getMinutes() < 10) ? "0" : "") + this.getMinutes() + ((this.getSeconds() < 10) ? "0" : "") + this.getSeconds()
         }
 
+        function base64Converter() {
+            const file = $('#load-csv')[0].files[0]
+            if (file) {
+                const reader = new FileReader()
+                reader.addEventListener('load', function (e) {
+                    let text = e.target.result
+                    configSet.csv_url = text
+                })
+                reader.addEventListener('error', function () {
+                    alert('Error : Failed to read file')
+                })
+                reader.readAsDataURL(file)
+            }
+        }
+
+        function postMaker() {
+            const formData = new FormData();
+            formData.append('filter_name_list', configSet.filters);
+            formData.append('confidence_threshold_list', configSet.confidence_thresholds);
+            formData.append('column_name', configSet.col_name);
+            formData.append('csv_file', configSet.csv_url);
+
+            fetch(URL.host + URL.api_psot, { method: 'POST', body: formData })
+                .then(response => response.json())
+                .then(result => {
+                    console.log('Success:', result);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
         /**********  submit button **********/
         var csv = ''
         $("button").click(function () {
             if (configSet.method == 'GET') {
                 // console.log(URL.host + URL.api_get + urlMaker())
-                fetch(URL.host + URL.api_get + urlMaker())
-                    .then(function (response) {
-                        if (response.status !== 200) {
-                            console.log("Fetch response failed. Status Code: " + response.status)
-                            return Promise.reject(response)
-                        } else {
-                            return response.text()
-                        }
-                    }).then(function (data) {
-                        saveAsCSV(data, 'report_' + new Date().now())
-                    }).catch(function (error) {
-                        console.log("Fetch JS failed: ", error)
-                    })
+                fetch(URL.host + URL.api_get + urlMaker(),
+                    alert('Request Sent Successfully!\nPlease wait for the report file!')
+                ).then(function (response) {
+                    alert('Receiving the report file from server!')
+                    if (response.status !== 200) {
+                        console.log("Fetch response failed. Status Code: " + response.status)
+                        return Promise.reject(response)
+                    } else {
+                        return response.text()
+                    }
+                }).then(function (data) {
+                    saveAsCSV(data, 'report_' + new Date().now())
+                }).catch(function (error) {
+                    alert('There was an error happening!')
+                    console.log("Fetch JS failed: ", error)
+                })
             } else if (configSet.method == 'POST') {
-                console.log(URL.host + URL.api_get + urlMaker())
+                console.log(URL.host + URL.api_psot)
+                base64Converter()
+                postMaker()
+                // $.post(configSet.csv_url, function (data, status) { alert("Data: " + data + "\nStatus: " + status) })
             }
         })
 
